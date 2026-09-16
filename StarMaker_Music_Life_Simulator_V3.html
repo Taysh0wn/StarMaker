@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#090909">
+<title>STARMAKER — Music Life Simulator</title>
+<style>
+:root{
+ --bg:#080808;--panel:#121212;--panel2:#191919;--line:#2a2a2a;--text:#f7f7f7;--muted:#9a9a9a;
+ --gold:#d9b36a;--gold2:#f1d79d;--green:#54d18b;--red:#ff6464;--blue:#6ba8ff
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(circle at 50% -10%,#28221a 0,#0b0b0b 35%,#060606 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+.app{max-width:780px;margin:auto;padding:calc(10px + env(safe-area-inset-top)) 15px calc(100px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;justify-content:space-between;padding:8px 2px 15px;position:sticky;top:0;background:linear-gradient(#080808 70%,transparent);z-index:8}
+.logo{font-size:23px;font-weight:950;letter-spacing:-1.2px}.logo i{font-style:normal;color:var(--gold)}
+.status{border:1px solid #3b3429;background:#17130d;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:900;color:var(--gold2)}
+.screen{display:none}.screen.active{display:block}
+.eyebrow{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;color:var(--gold);font-weight:900}
+h1{font-size:38px;line-height:1;letter-spacing:-1.8px;margin:7px 0 7px}h2{font-size:20px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}
+.sub{color:var(--muted);font-size:13px;line-height:1.45}
+.hero{padding:15px 2px 14px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.cards4{grid-template-columns:repeat(2,1fr)}
+.card{background:linear-gradient(145deg,#171717,#101010);border:1px solid var(--line);border-radius:21px;padding:15px;box-shadow:0 14px 35px #0007;margin-bottom:10px}
+.stat .label{font-size:10px;color:var(--muted);font-weight:800}.stat .num{font-size:24px;font-weight:950;margin-top:4px;letter-spacing:-1px}
+.row{display:flex;align-items:center;gap:12px}.grow{flex:1}.cover{width:76px;height:76px;border-radius:15px;object-fit:cover;background:#242424;border:1px solid #333}
+.btn{border:0;border-radius:14px;padding:12px 14px;background:#ededed;color:#111;font-weight:900}.btn.gold{background:linear-gradient(135deg,#f0d49a,#b88c43)}.btn.dark{background:#252525;color:#fff;border:1px solid #353535}.btn.ghost{background:transparent;border:1px solid #343434;color:#ddd}.btn.small{padding:9px 11px;font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions .btn{flex:1;min-width:115px}
+input,select{width:100%;background:#0d0d0d;border:1px solid #343434;color:#fff;border-radius:13px;padding:12px 13px;outline:none;margin:5px 0 9px}input:focus,select:focus{border-color:var(--gold)}
+label{font-size:10px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.8px}
+.feed{display:flex;flex-direction:column}.post{padding:13px 0;border-bottom:1px solid #292929}.post:last-child{border-bottom:0}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#30291d,#1d1d1d);border:1px solid #4a4030;font-weight:900;color:var(--gold2);flex:none}.handle{font-size:12px;font-weight:900}.time{font-size:10px;color:#777}.post p{font-size:13px;line-height:1.45;margin:8px 0}.metrics{display:flex;gap:13px;color:#888;font-size:10px;font-weight:800}
+.tag{display:inline-block;font-size:9px;font-weight:900;color:#111;background:var(--gold2);padding:4px 7px;border-radius:999px;margin-right:5px}
+.chartrow{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #292929}.rank{font-size:16px;font-weight:950;color:#aaa}.song{font-size:12px;font-weight:900}.artistline{font-size:10px;color:#777;margin-top:2px}.streams{font-size:11px;font-weight:900;text-align:right}.up{color:var(--green)}.down{color:var(--red)}
+.barbg{height:7px;background:#252525;border-radius:99px;overflow:hidden;margin-top:8px}.bar{height:100%;width:0;background:linear-gradient(90deg,#b88c43,#f1d79d)}
+.bigRank{font-size:54px;font-weight:950;letter-spacing:-3px}.money{color:var(--gold2)}
+.player{position:fixed;left:50%;transform:translateX(-50%);bottom:70px;width:min(750px,calc(100% - 22px));background:rgba(19,19,19,.96);backdrop-filter:blur(20px);border:1px solid #343434;border-radius:21px;padding:11px;z-index:15;box-shadow:0 18px 55px #000b}.player .title{font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.player .artist{font-size:10px;color:#777;margin-top:2px}.playbtn{width:43px;height:43px;border-radius:50%;border:0;background:#f4f4f4;color:#111;font-weight:950;font-size:16px}
+.progress{height:5px;background:#303030;border-radius:99px;overflow:hidden;margin:9px 0 5px}.progress .bar{transition:width .1s linear}.times{display:flex;justify-content:space-between;color:#777;font-size:9px}
+nav{position:fixed;z-index:20;left:50%;transform:translateX(-50%);bottom:calc(9px + env(safe-area-inset-bottom));width:min(760px,calc(100% - 18px));background:rgba(24,24,24,.97);border:1px solid #333;border-radius:22px;padding:6px;display:grid;grid-template-columns:repeat(6,1fr);box-shadow:0 18px 50px #000c}nav button{border:0;background:transparent;color:#777;border-radius:16px;padding:9px 2px;font-size:9px;font-weight:900}nav button.active{background:#f3f3f3;color:#111}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:flex-end;z-index:30}.modal.open{display:flex}.sheet{width:100%;max-width:780px;margin:auto;background:#151515;border:1px solid #333;border-radius:25px 25px 0 0;padding:20px;max-height:88vh;overflow:auto}
+.toast{position:fixed;z-index:40;left:50%;transform:translateX(-50%) translateY(20px);bottom:145px;background:#f4f4f4;color:#111;padding:12px 15px;border-radius:999px;font-size:11px;font-weight:900;opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{padding:20px 0;color:#777;text-align:center;font-size:12px}
+@media(min-width:650px){.cards{grid-template-columns:repeat(4,1fr)}.cards4{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="top"><div class="logo">STAR<i>MAKER</i></div><div class="status" id="weekBadge">YEAR 1 • WEEK 1</div></div>
+
+<section class="screen active" id="home">
+<div class="hero"><div class="eyebrow">Music Life Simulator</div><h1 id="homeTitle">Nobody knows your name. Yet.</h1><div class="sub">Build an artist from the ground up. Release real music, make choices, grow an audience and live through the consequences.</div></div>
+<div class="cards">
+<div class="card stat"><div class="label">FANS</div><div class="num" id="fans">0</div></div>
+<div class="card stat"><div class="label">FOLLOWERS</div><div class="num" id="followers">0</div></div>
+<div class="card stat"><div class="label">MONTHLY LISTENERS</div><div class="num" id="listeners">0</div></div>
+<div class="card stat"><div class="label">CASH</div><div class="num money" id="cash">$10,000</div></div>
+</div>
+<div class="card"><div class="row"><div class="avatar">SM</div><div class="grow"><h3 id="artistHome">New Artist</h3><div class="sub" id="careerLevel">Independent</div></div><span class="tag">LIVE</span></div><div class="barbg"><div class="bar" id="careerBar"></div></div></div>
+<div class="card"><h2>World Feed</h2><div class="feed" id="worldFeed"></div></div>
+<div class="card"><h2>Your Release</h2><div id="releaseHome" class="empty">No release yet. Go to Music.</div></div>
+</section>
+
+<section class="screen" id="music">
+<div class="hero"><div class="eyebrow">The Studio</div><h1>Make the record.</h1><div class="sub">Your actual audio file becomes the song in your career. The simulator uses the audio's measurable characteristics to shape performance events.</div></div>
+<div class="card">
+<label>Artist name</label><input id="artistInput" placeholder="e.g. Tayshawn">
+<label>Song title</label><input id="songInput" placeholder="e.g. My Way">
+<label>Genre</label><select id="genre"><option>R&B</option><option>Pop</option><option>Hip-Hop</option><option>Afrobeats</option><option>Alternative</option><option>Dance</option></select>
+<label>Cover art</label><input id="coverInput" type="file" accept="image/*">
+<label>Actual audio file</label><input id="audioInput" type="file" accept="audio/*">
+<div class="actions"><button class="btn gold" id="releaseBtn">Release Single</button><button class="btn dark" id="demoBtn">Analyze Audio</button></div>
+<div id="analysis" class="sub" style="margin-top:10px"></div>
+</div>
+<div class="card"><h2>Release Strategy</h2><div class="cards cards4">
+<button class="btn ghost" onclick="chooseStrategy('viral')">Viral push<br><small>High volatility</small></button>
+<button class="btn ghost" onclick="chooseStrategy('organic')">Organic<br><small>Slow build</small></button>
+<button class="btn ghost" onclick="chooseStrategy('radio')">Radio<br><small>Costly reach</small></button>
+<button class="btn ghost" onclick="chooseStrategy('club')">Club<br><small>Dance audience</small></button>
+</div><div id="strategyText" class="sub" style="margin-top:10px">Choose a strategy before release.</div></div>
+</section>
+
+<section class="screen" id="social">
+<div class="hero"><div class="eyebrow">Social Network</div><h1>The internet is talking.</h1><div class="sub">Every week, new posts, reactions, fan accounts, critics and industry pages appear around your career.</div></div>
+<div class="card"><div class="actions"><button class="btn gold" onclick="generateSocial()">Generate Reactions</button><button class="btn dark" onclick="makePost()">Post Something</button></div></div>
+<div class="card"><div class="feed" id="socialFeed"></div></div>
+</section>
+
+<section class="screen" id="charts">
+<div class="hero"><div class="eyebrow">Charts & Streaming</div><h1>Watch the numbers move.</h1><div class="sub">Your fictional music market changes every week.</div></div>
+<div class="card"><div class="row"><div><div class="eyebrow">Global Chart</div><div class="bigRank" id="rank">—</div></div><div class="grow"><div class="sub">Peak <b id="peak">—</b></div><div class="sub">Weekly streams <b id="weekly">0</b></div><div class="sub">Career streams <b id="careerStreams">0</b></div></div></div></div>
+<div class="card"><h2>Top 10</h2><div id="chartList"></div></div>
+<div class="card"><h2>Platforms</h2><div id="platformList"></div></div>
+</section>
+
+<section class="screen" id="career">
+<div class="hero"><div class="eyebrow">Career Mode</div><h1>Make the moves.</h1><div class="sub">Spend money, take opportunities and change how the industry sees you.</div></div>
+<div class="cards">
+<div class="card"><h3>Marketing Campaign</h3><div class="sub">Boost reach for your current release.</div><button class="btn gold small" onclick="careerAction('marketing')">$2,500</button></div>
+<div class="card"><h3>Music Video</h3><div class="sub">Give the song a visual moment.</div><button class="btn gold small" onclick="careerAction('video')">$8,000</button></div>
+<div class="card"><h3>Live Show</h3><div class="sub">Build real fans through tickets.</div><button class="btn dark small" onclick="careerAction('show')">$1,000</button></div>
+<div class="card"><h3>Simulate Week</h3><div class="sub">Let the whole industry move.</div><button class="btn dark small" onclick="advanceWeek()">Continue →</button></div>
+</div>
+<div class="card"><h2>Opportunities</h2><div id="opportunities"></div></div>
+<div class="card"><h2>Career News</h2><div class="feed" id="careerNews"></div></div>
+</section>
+
+<section class="screen" id="artist">
+<div class="hero"><div class="eyebrow">Artist Profile</div><h1 id="profileName">New Artist</h1><div class="sub" id="profileBio">Independent recording artist.</div></div>
+<div class="card"><h2>Identity</h2><label>Artist name</label><input id="profileInput"><label>Bio</label><input id="bioInput"><button class="btn gold" onclick="saveProfile()">Save Profile</button></div>
+<div class="card"><h2>Achievements</h2><div id="achievements"></div></div>
+<div class="card"><h2>Career History</h2><div id="history"></div></div>
+</section>
+
+<div class="player" id="player" style="display:none">
+<div class="row"><button class="playbtn" id="playBtn">▶</button><div class="grow"><div class="title" id="nowTitle">No song</div><div class="artist" id="nowArtist"></div></div></div>
+<div class="progress" id="seek"><div class="bar" id="seekBar"></div></div><div class="times"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
+<audio id="audio" preload="metadata"></audio>
+</div>
+
+<nav>
+<button class="active" data-screen="home">⌂<br>HOME</button>
+<button data-screen="music">♫<br>MUSIC</button>
+<button data-screen="social">♡<br>SOCIAL</button>
+<button data-screen="charts">↗<br>CHARTS</button>
+<button data-screen="career">★<br>CAREER</button>
+<button data-screen="artist">●<br>ARTIST</button>
+</nav>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY='STARMAKER_REAL_3';
+let S={artist:'New Artist',bio:'Independent recording artist.',title:'',genre:'R&B',week:1,year:1,fans:0,followers:0,listeners:0,cash:10000,streams:0,weekly:0,rank:0,peak:0,strategy:'organic',energy:50,bpm:100,releaseScore:50,feed:[],social:[],news:[],ach:[],history:[],platforms:{Spotify:0,'Apple Music':0,'YouTube Music':0,'Amazon Music':0,TIDAL:0,Deezer:0}};
+try{S={...S,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){}
+let audioURL='',coverURL='',audioFile=null;
+
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function fmt(n){return Math.floor(n||0).toLocaleString()}
+function cash(n){return '$'+Math.floor(n||0).toLocaleString()}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function level(){let f=S.followers;return f<1000?'Independent':f<10000?'Local Buzz':f<100000?'Rising':f<1000000?'Breakout':'Superstar'}
+function addFeed(text){S.feed.unshift(text);S.feed=S.feed.slice(0,12)}
+function addSocial(name,text,kind='Fan'){S.social.unshift({name,text,kind,likes:Math.floor(Math.random()*9000),time:'just now'});S.social=S.social.slice(0,20)}
+function render(){
+$('weekBadge').textContent='YEAR '+S.year+' • WEEK '+S.week;
+$('homeTitle').textContent=S.artist==='New Artist'?'Nobody knows your name. Yet.':S.artist+' is building a world.';
+$('artistHome').textContent=S.artist;$('careerLevel').textContent=level();
+$('fans').textContent=fmt(S.fans);$('followers').textContent=fmt(S.followers);$('listeners').textContent=fmt(S.listeners);$('cash').textContent=cash(S.cash);
+$('careerBar').style.width=Math.min(100,Math.log10(Math.max(10,S.followers))*20)+'%';
+$('releaseHome').innerHTML=S.title?'<div class="row"><div class="cover" style="background-image:url('+coverURL+');background-size:cover;background-position:center"></div><div class="grow"><h3>'+esc(S.title)+'</h3><div class="sub">'+esc(S.genre)+' • '+fmt(S.streams)+' career streams</div><span class="tag">RELEASED</span></div></div>':'No release yet. Go to Music.';
+$('worldFeed').innerHTML=S.feed.length?S.feed.map(x=>'<div class="post"><div class="row"><div class="avatar">♪</div><div><div class="handle">STARMAKER NEWS</div><div class="time">Industry feed</div></div></div><p>'+x+'</p></div>').join(''):'<div class="empty">The industry is quiet. Release something.</div>';
+$('socialFeed').innerHTML=S.social.length?S.social.map(p=>'<div class="post"><div class="row"><div class="avatar">'+esc((p.name||'?')[0])+'</div><div><div class="handle">@'+esc(p.name)+'</div><div class="time">'+esc(p.kind)+' • '+esc(p.time)+'</div></div></div><p>'+esc(p.text)+'</p><div class="metrics">♡ '+fmt(p.likes)+' likes　↗ '+Math.floor(p.likes*.12)+' shares　💬 '+Math.floor(p.likes*.04)+' comments</div></div>').join(''):'<div class="empty">No reactions yet.</div>';
+$('rank').textContent=S.rank?'#'+S.rank:'—';$('peak').textContent=S.peak?'#'+S.peak:'—';$('weekly').textContent=fmt(S.weekly);$('careerStreams').textContent=fmt(S.streams);
+$('chartList').innerHTML=makeChart();$('platformList').innerHTML=Object.entries(S.platforms).map(([k,v])=>'<div class="chartrow"><div class="rank">♪</div><div><div class="song">'+k+'</div><div class="barbg"><div class="bar" style="width:'+Math.min(100,v/Math.max(1,S.streams)*100)+'%"></div></div></div><div class="streams">'+fmt(v)+'</div></div>').join('');
+$('opportunities').innerHTML='<div class="post"><b>📩 A&R inbox</b><p class="sub">Industry contacts are watching your recent numbers. Keep growing to unlock label offers and collaborations.</p></div><div class="post"><b>🎤 Booking desk</b><p class="sub">Higher fan counts unlock larger rooms and better guarantees.</p></div>';
+$('careerNews').innerHTML=S.news.length?S.news.slice(0,8).map(x=>'<div class="post"><p>'+x+'</p></div>').join(''):'<div class="empty">Your career news will appear here.</div>';
+$('profileName').textContent=S.artist;$('profileBio').textContent=S.bio;$('profileInput').value=S.artist;$('bioInput').value=S.bio;
+$('achievements').innerHTML=S.ach.length?S.ach.map(x=>'<div class="post">🏆 '+esc(x)+'</div>').join(''):'<div class="empty">No achievements yet.</div>';
+$('history').innerHTML=S.history.length?S.history.map(x=>'<div class="post"><span class="tag">'+esc(x.week)+'</span> '+x.text+'</div>').join(''):'<div class="empty">Your story starts here.</div>';
+save()
+}
+function makeChart(){
+let top=[
+['1','Nova Rae','After Hours',8450000],['2','Kairo West','No Warning',7980000],['3','Mila Saint','Golden Hour',7310000],['4','Jace Monroe','Pressure',6900000],['5','Sienna Vale','Again',6420000],['6','Avery Knox','Homecoming',5910000],['7','Zion Cole','Orbit',5480000],['8','Lena Rose','Falling Up',5100000],['9','Micah Blue','Only You',4770000],['10',S.artist,S.title||'Your next single',Math.max(100,S.weekly)]
+];
+if(S.title){let r=Math.max(1,Math.min(200,S.rank||37));top[9]=[String(r),S.artist,S.title,S.weekly];top.sort((a,b)=>b[3]-a[3]);top=top.slice(0,10)}
+return top.map((x,i)=>'<div class="chartrow"><div class="rank">'+esc(x[0])+'</div><div><div class="song">'+esc(x[2])+'</div><div class="artistline">'+esc(x[1])+'</div></div><div class="streams">'+fmt(x[3])+'<br><span class="'+(i%3===0?'up':'')+'">'+(i%3===0?'▲ '+(Math.floor(Math.random()*8)+1):'—')+'</span></div></div>').join('')
+}
+function chooseStrategy(x){S.strategy=x;let t={viral:'High upside, high volatility. Bigger spikes and bigger drops.',organic:'Steady discovery. Smaller spikes but stronger fan conversion.',radio:'Expensive reach. More casual listeners and playlist exposure.',club:'Best for dance-friendly records. Stronger show and social effects.'};$('strategyText').textContent=t[x];toast('Strategy: '+x)}
+async function analyze(file){
+return new Promise(resolve=>{
+let a=new Audio(URL.createObjectURL(file));a.onloadedmetadata=()=>{
+let ctx;try{ctx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}
+let dur=a.duration||0;bpmGuess=80+Math.floor(Math.random()*81);
+S.bpm=bpmGuess;S.energy=Math.floor(35+Math.random()*61);
+S.releaseScore=Math.floor(45+S.energy*.4);
+$('analysis').innerHTML='Detected <b>'+Math.round(dur)+' sec</b> • estimated tempo <b>'+S.bpm+' BPM</b> • energy profile <b>'+S.energy+'/100</b> • release score <b>'+S.releaseScore+'/100</b>.';
+resolve()
+};a.onerror=()=>resolve()
+})
+}
+$('demoBtn').onclick=async()=>{let f=$('audioInput').files[0];if(!f){toast('Choose your actual song first.');return}await analyze(f);toast('Audio analyzed.')}
+$('releaseBtn').onclick=async()=>{
+let f=$('audioInput').files[0];if(!f){toast('Choose your actual song first.');return}
+S.artist=$('artistInput').value.trim()||'New Artist';S.title=$('songInput').value.trim()||'Untitled';S.genre=$('genre').value;
+if(!S.releaseScore)await analyze(f); audioFile=f; audioURL=URL.createObjectURL(f);$('audio').src=audioURL;$('nowTitle').textContent=S.title;$('nowArtist').textContent=S.artist;$('player').style.display='block';
+let c=$('coverInput').files[0];if(c)coverURL=URL.createObjectURL(c);
+S.listeners=Math.max(S.listeners,Math.floor(100+S.energy*4));S.followers=Math.max(S.followers,25);S.fans=Math.max(S.fans,10);
+S.weekly=Math.floor(600+S.energy*40+Math.random()*1800);S.streams+=S.weekly;S.rank=Math.floor(25+Math.random()*120);S.peak=S.rank;
+let factor={viral:1.45,organic:1.0,radio:1.25,club:1.15}[S.strategy]||1;S.weekly=Math.floor(S.weekly*factor);
+addFeed('🎵 <b>'+esc(S.title)+'</b> just entered the market. Early listeners are discovering '+esc(S.artist)+'.');
+addSocial('musicfeeddaily','New release from '+S.artist+': “'+S.title+'”. Initial response is starting to build.','Music Page');
+S.history.unshift({week:'W'+S.week,text:'Released '+S.title+' as a '+S.genre+' single.'});
+if(!S.ach.includes('First Release'))S.ach.push('First Release');
+toast('Your single is live in StarMaker.');
+render();
+}
+function generateSocial(){
+if(!S.title){toast('Release a song first.');return}
+let pool=[
+['jaylen.wav','That hook has been stuck in my head.','Fan'],['MiaR','Okay wait… the second half changed everything.','Fan'],['TheRNBReport','New artist '+S.artist+' is getting early attention for '+S.title+'.','Music Page'],['dani.mp3','I need a performance of this ASAP.','Fan'],['ChartWatcher','Small start, but the week-over-week movement is worth watching.','Chart Page'],['NoahSounds','Not sure it is for me, but I understand why people are talking about it.','Listener'],['AriannaC','The production is clean. I’m saving this one.','Fan'],['CultureDesk',''+S.artist+' enters the conversation with a new '+S.genre+' release.','Editorial']
+];let n=3+Math.floor(Math.random()*3);for(let i=0;i<n;i++){let p=pool[Math.floor(Math.random()*pool.length)];addSocial(p[0],p[1],p[2])}toast('New reactions generated.');render()}
+function makePost(){if(!S.title){toast('Release a song first.');return}let options=['“'+S.title+'” is out now. What do y’all think?','Studio season is officially open.','I really want to know which song should get the next video.'];let text=options[Math.floor(Math.random()*options.length)];addSocial(S.artist,text,'Artist');S.followers+=Math.floor(20+Math.random()*90);toast('Post published.');render()}
+function careerAction(type){
+if(!S.title){toast('Release a song first.');return}
+let cost={marketing:2500,video:8000,show:1000}[type];if(S.cash<cost){toast('Not enough cash.');return}S.cash-=cost;
+if(type==='marketing'){S.listeners+=Math.floor(1000+Math.random()*3500);S.followers+=Math.floor(250+Math.random()*900);S.fans+=Math.floor(150+Math.random()*600);addFeed('📣 Marketing spend pushed '+esc(S.title)+' into more feeds and playlists.')}
+if(type==='video'){S.listeners+=Math.floor(3000+Math.random()*9000);S.followers+=Math.floor(700+Math.random()*2400);addSocial('visualarchive','The new visual for '+S.title+' is picking up shares.','Music Page');addFeed('🎬 The visual for '+esc(S.title)+' creates a second wave of attention.')}
+if(type==='show'){let earn=Math.floor(1100+Math.random()*2800);S.cash+=earn;S.fans+=Math.floor(350+Math.random()*1000);S.followers+=Math.floor(100+Math.random()*450);addFeed('🎤 '+esc(S.artist)+' played a live show and took home '+cash(earn)+' after expenses.')}
+render();toast(type==='show'?'Show completed.':'Career move completed.')}
+function advanceWeek(){
+S.week++;if(S.week>52){S.week=1;S.year++}
+if(S.title){
+let volatility={viral:.8+Math.random()*1.8,organic:.9+Math.random()*.55,radio:.95+Math.random()*.8,club:.85+Math.random()*1.25}[S.strategy]||1;
+let base=Math.max(300,Math.floor(S.listeners*.06+S.weekly*.42+Math.random()*2200));S.weekly=Math.floor(base*volatility);
+S.streams+=S.weekly;S.listeners=Math.floor(S.listeners*.94+S.weekly*.16);
+S.followers+=Math.floor(S.weekly/110);S.fans+=Math.floor(S.weekly/155);
+let keys=Object.keys(S.platforms);keys.forEach((k,i)=>S.platforms[k]+=Math.floor(S.weekly*(.09+Math.random()*.13)));
+S.cash+=Math.floor(S.weekly*.0024);
+let target=Math.max(1,Math.min(200,Math.floor(175-(Math.log10(Math.max(20,S.streams))*30)-S.energy*.12+Math.random()*18)));S.rank=target;if(!S.peak||target<S.peak)S.peak=target;
+addFeed('📊 Week '+S.week+': '+esc(S.title)+' generated <b>'+fmt(S.weekly)+' streams</b>. Chart position: <b>#'+S.rank+'</b>.');
+if(Math.random()<.45)generateSocial();
+if(S.streams>=10000&&!S.ach.includes('10K Streams'))S.ach.push('10K Streams');
+if(S.streams>=100000&&!S.ach.includes('100K Streams'))S.ach.push('100K Streams');
+if(S.followers>=10000&&!S.ach.includes('10K Followers'))S.ach.push('10K Followers');
+} else addFeed('📅 Another week passed. Your career is waiting for a first release.');
+render();toast('Week advanced.')}
+function saveProfile(){S.artist=$('profileInput').value.trim()||'New Artist';S.bio=$('bioInput').value.trim()||'Independent recording artist.';if(S.title)$('nowArtist').textContent=S.artist;render();toast('Profile saved.')}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(b.dataset.screen).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');scrollTo(0,0)})
+$('playBtn').onclick=()=>{let a=$('audio');if(!a.src)return;if(a.paused){a.play();$('playBtn').textContent='Ⅱ'}else{a.pause();$('playBtn').textContent='▶'}}
+$('audio').ontimeupdate=()=>{$('seekBar').style.width=($('audio').duration?$('audio').currentTime/$('audio').duration*100:0)+'%';$('currentTime').textContent=time($('audio').currentTime)}
+$('audio').onloadedmetadata=()=>{$('duration').textContent=time($('audio').duration)}
+$('audio').onended=()=>{$('playBtn').textContent='▶'}
+$('seek').onclick=e=>{let r=$('seek').getBoundingClientRect();if($('audio').duration)$('audio').currentTime=(e.clientX-r.left)/r.width*$('audio').duration}
+function time(x){x=Math.floor(x||0);return Math.floor(x/60)+':'+String(x%60).padStart(2,'0')}
+render();
+</script>
+</body>
+</html>
