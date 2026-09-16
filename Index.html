@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fbf8f0"><meta name="apple-mobile-web-app-capable" content="yes">
+<title>StarMaker</title>
+<style>
+:root{--bg:#faf8f2;--card:#fffdf8;--ink:#171719;--muted:#77736d;--line:#e7e1d7;--gold:#b9954b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+.app{max-width:760px;margin:auto;padding:env(safe-area-inset-top) 16px calc(90px + env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 0 8px}.brand{font-weight:900;letter-spacing:.08em}.icon{background:#fff;border:1px solid var(--line);border-radius:50%;width:40px;height:40px}
+h1{font-size:30px;margin:18px 0 4px}h2{font-size:20px;margin:0 0 14px}.muted{color:var(--muted);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin:12px 0;box-shadow:0 5px 22px #00000008}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:#f5f1e8;border-radius:16px;padding:13px}.stat b{display:block;font-size:21px;margin-top:4px}
+.cover{width:96px;height:96px;border-radius:17px;object-fit:cover;background:#eee7d9}.release{display:flex;gap:14px;align-items:center}
+button{font:inherit;font-weight:800;border:0;border-radius:13px;padding:13px 16px;margin:5px 4px 0 0;background:#19191b;color:white}button.gold{background:var(--gold)}button.light{background:#eee9df;color:#171719}
+input,select{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#171719;margin:5px 0 10px}label{font-size:13px;font-weight:700;color:#666}
+audio{width:100%;margin-top:12px}.pill{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:5px 9px;font-size:12px;margin:2px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fffdf9ee;backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:9px max(10px,env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:8px;z-index:5}.nav button{background:transparent;color:#555;font-size:12px;padding:8px 9px}.nav button.active{color:#171719}
+.screen{display:none}.screen.active{display:block}.feed{border-left:2px solid #ded5c6;padding-left:12px}.feed div{padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:10px 4px;border-bottom:1px solid var(--line);font-size:13px}
+.hidden{display:none}.notice{font-size:12px;color:#777;margin-top:8px}
+</style></head><body>
+<div class="app">
+<header><div class="brand">✦ STARMAKER</div><button class="icon" onclick="alert('StarMaker V1')">⋯</button></header>
+
+<div id="home" class="screen active">
+<h1 id="welcome">Good evening.</h1><div class="muted">Build your music career.</div>
+<div class="card"><div class="release"><img id="homeCover" class="cover"><div><span class="pill" id="artistPill">Independent</span><h2 id="homeArtist">Create your artist</h2><div class="muted" id="homeSong">No release yet</div></div></div></div>
+<div class="card"><h2>Career overview</h2><div class="grid">
+<div class="stat">Fans<b id="fans">0</b></div><div class="stat">Followers<b id="followers">0</b></div>
+<div class="stat">Streams<b id="streams">0</b></div><div class="stat">Money<b id="money">$0</b></div>
+</div></div>
+<div class="card"><h2>Latest release</h2><div id="latest">Release a song to begin your career.</div></div>
+<div class="card"><h2>Industry feed</h2><div class="feed" id="feed"><div>Welcome to StarMaker. Your career starts here.</div></div></div>
+</div>
+
+<div id="music" class="screen">
+<h1>Music</h1><div class="muted">Your catalog</div>
+<div class="card"><h2>New release</h2>
+<label>Artist name</label><input id="artist" placeholder="Tayshawn">
+<label>Song title</label><input id="title" placeholder="Switch To My Way">
+<label>Cover art</label><input id="coverInput" type="file" accept="image/*">
+<label>Audio — MP3, WAV, M4A, etc.</label><input id="audioInput" type="file" accept="audio/*">
+<div id="fileName" class="notice">No audio selected.</div>
+<button class="gold" onclick="prepareRelease()">Add to catalog</button>
+<div id="audioBox"></div>
+</div>
+<div class="card"><h2>Release settings</h2>
+<label>Release type</label><select id="type"><option>Single</option><option>EP</option><option>Album</option></select>
+<label>Genre</label><select id="genre"><option>R&B</option><option>Pop</option><option>Hip-Hop</option><option>Pop/R&B</option><option>Afrobeats</option></select>
+<label>Release date</label><input id="date" type="date">
+<div><span class="pill">Spotify — simulated</span><span class="pill">Apple Music — simulated</span><span class="pill">YouTube Music — simulated</span><span class="pill">Amazon Music — simulated</span><span class="pill">TIDAL — simulated</span><span class="pill">Deezer — simulated</span></div>
+<button onclick="releaseSong()">Release</button>
+</div>
+<div class="card"><h2>Your catalog</h2><div id="catalog">Nothing released yet.</div></div>
+</div>
+
+<div id="charts" class="screen"><h1>Charts</h1><div class="muted">Weekly simulated performance</div>
+<div class="card"><div class="grid"><div class="stat">Current<b id="chart">—</b></div><div class="stat">Peak<b id="peak">—</b></div></div></div>
+<div class="card"><table><thead><tr><th>Week</th><th>Streams</th><th>Chart</th></tr></thead><tbody id="chartTable"></tbody></table></div></div>
+
+<div id="career" class="screen"><h1>Career</h1><div class="muted">Every week changes your story.</div>
+<div class="card"><h2>Career moves</h2>
+<button onclick="sim('promo')">📣 Promote</button><button onclick="sim('video')">🎬 Music video</button><button onclick="sim('show')">🎤 Book show</button><button onclick="sim('random')">🎲 Simulate week</button>
+</div><div class="card"><h2>Milestones</h2><div id="milestones">□ 10K fans<br>□ 100K streams<br>□ First sold-out show<br>□ 1M streams<br>□ Award nomination</div></div></div>
+
+<div id="artistScreen" class="screen"><h1>Artist</h1><div class="card"><h2 id="artistName">Create your artist</h2><div class="muted" id="artistDetails">Independent artist</div><button onclick="resetGame()" class="light">Reset career</button></div></div>
+</div>
+
+<div class="nav">
+<button class="active" onclick="tab('home',this)">⌂<br>Home</button>
+<button onclick="tab('music',this)">♫<br>Music</button>
+<button onclick="tab('charts',this)">↗<br>Charts</button>
+<button onclick="tab('career',this)">◇<br>Career</button>
+<button onclick="tab('artistScreen',this)">○<br>Artist</button>
+</div>
+
+<script>
+let s=JSON.parse(localStorage.getItem('starmaker')||'null')||{artist:'',song:'',cover:'',audio:'',streams:0,fans:0,followers:0,money:0,week:0,chart:0,peak:0,history:[],released:false};
+const $=x=>document.getElementById(x), fmt=n=>Math.round(n).toLocaleString();
+function save(){localStorage.setItem('starmaker',JSON.stringify(s))}
+function tab(id,btn){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active')}
+$('audioInput').onchange=e=>{let f=e.target.files[0];if(f){$('fileName').textContent=f.name;s.audio=URL.createObjectURL(f);$('audioBox').innerHTML='<audio controls src="'+s.audio+'"></audio>'}}
+$('coverInput').onchange=e=>{let f=e.target.files[0];if(f)s.cover=URL.createObjectURL(f)}
+function prepareRelease(){s.artist=$('artist').value.trim()||'Tayshawn';s.song=$('title').value.trim()||'My New Single';render();alert('Song added to your catalog. You can play it above, then tap Release.')}
+function releaseSong(){if(!$('audioInput').files[0]){alert('Choose your song from Files first.');return}prepareRelease();s.released=true;s.week=1;event('🎵 '+s.artist+' released “'+s.song+'”.');sim('release');render()}
+function event(x){s.history.unshift({w:s.week||1,st:0,c:s.chart||'—',e:x});s.history=s.history.slice(0,15)}
+function sim(action){if(!s.released){alert('Release a song first.');return}
+let base=4000+Math.random()*9000;
+if(action==='promo'){base*=1.7;event('📣 Promotion increased discovery this week.')}
+else if(action==='video'){base*=1.9;s.money-=1200;event('🎬 The music video premiered.')}
+else if(action==='show'){base*=1.35;s.money+=800;event('🎤 A simulated show brought new fans.')}
+else {let r=Math.random();if(r<.2){base*=2.5;event('🔥 The song caught a viral moment.')}else if(r<.4){base*=.62;event('📉 A quieter week: listeners moved on to newer releases.')}else event('📊 Steady week across the simulated platforms.')}
+s.streams+=base;s.fans+=Math.round(base/80)+Math.floor(Math.random()*80);s.followers+=Math.round(base/60);s.money+=base*.003;
+s.chart=Math.max(1,Math.min(200,Math.round(205-Math.log10(s.streams+10)*52-Math.random()*20)));if(!s.peak||s.chart<s.peak)s.peak=s.chart;
+s.history.unshift({w:s.week,st:base,c:s.chart});s.history=s.history.slice(0,12);s.week++;save();render()}
+function render(){
+$('homeArtist').textContent=s.artist||'Create your artist';$('artistPill').textContent=s.released?'Independent':'Independent';$('homeSong').textContent=s.song||'No release yet';
+$('artistName').textContent=s.artist||'Create your artist';$('artistDetails').textContent=s.released?'Independent • Week '+s.week:'Independent artist';
+$('fans').textContent=fmt(s.fans);$('followers').textContent=fmt(s.followers);$('streams').textContent=fmt(s.streams);$('money').textContent='$'+fmt(s.money);
+$('chart').textContent=s.chart?'#'+s.chart:'—';$('peak').textContent=s.peak?'#'+s.peak:'—';
+if(s.cover){$('homeCover').src=s.cover}
+$('latest').innerHTML=s.released?'<b>'+s.song+'</b><br><span class="muted">Week '+s.week+' • #'+s.chart+' • '+fmt(s.streams)+' streams</span>':'Release a song to begin your career.';
+$('catalog').innerHTML=s.released?'<b>🎵 '+s.song+'</b><br><span class="muted">'+$('genre').value+' • '+$('type').value+' • '+fmt(s.streams)+' simulated streams</span>':'Nothing released yet.';
+$('feed').innerHTML=s.history.filter(x=>x.e).slice(0,8).map(x=>'<div>'+x.e+'</div>').join('')||'<div>Welcome to StarMaker.</div>';
+$('chartTable').innerHTML=s.history.filter(x=>x.st).map(x=>'<tr><td>'+x.w+'</td><td>'+fmt(x.st)+'</td><td>#'+x.c+'</td></tr>').join('');
+let m='';[[10000,'10K fans'],[100000,'100K streams'],[1000000,'1M streams']].forEach(([n,t])=>m+=(s.fans>=n||s.streams>=n?'☑ ':'□ ')+t+'<br>');m+=(s.money>=5000?'☑ ':'□ ')+'First $5K<br>';m+=(s.peak&&s.peak<=50?'☑ ':'□ ')+'Top 50 chart<br>';$('milestones').innerHTML=m;
+}
+function resetGame(){if(confirm('Reset this career?')){localStorage.removeItem('starmaker');location.reload()}}
+render();
+</script></body></html>
